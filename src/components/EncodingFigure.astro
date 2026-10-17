@@ -1,19 +1,19 @@
 ---
 // Real encodings taken from bedrock-proj/spec (isa/**/encodings.yaml).
 // Digits are fixed opcode bits; letters are operand fields.
+// Labels are opcode-space sizes in bytes; payloads such as immediates come after.
 const rows = [
-  { mnemonic: 'SYSCALL', pattern: '0000101' },
-  { mnemonic: 'ADD.Q imm8, SP', pattern: '100011iiiiiiii' },
-  { mnemonic: 'LEA <ea>, Rn', pattern: '00111zzddddeeeeeee' },
-  { mnemonic: 'CMPJcc Rn, Rn', pattern: '111101000000zzccccssssdddd' },
-  { mnemonic: 'VFMADD Pn, Vn, Vn, Vn', pattern: '111111011100zz0ppppvvvvvwwwwwyyyyy' },
+  { mnemonic: 'SYSCALL', pattern: '0000101', size: '1B' },
+  { mnemonic: 'ADD.Q imm8, SP', pattern: '100011iiiiiiii', size: '2B' },
+  { mnemonic: 'LEA <ea>, Rn', pattern: '00111zzddddeeeeeee', size: '3B' },
+  { mnemonic: 'CMPJcc Rn, Rn', pattern: '111101000000zzccccssssdddd', size: '4B' },
+  { mnemonic: 'VFMADD Pn, Vn, Vn, Vn', pattern: '111111011100zz0ppppvvvvvwwwwwyyyyy', size: '5B' },
 ];
 
 const cell = 13;
 const rowH = 34;
-const labelW = 0;
 const maxBits = Math.max(...rows.map((r) => r.pattern.length));
-const width = labelW + maxBits * cell;
+const width = maxBits * cell;
 const height = rows.length * rowH;
 
 // Group consecutive identical operand letters into one field span.
@@ -29,9 +29,9 @@ function segments(pattern: string) {
 }
 ---
 
-<svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Variable-length Bedrock instruction encodings, 7 to 34 bits">
+<svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Bedrock instruction encodings with 1- to 5-byte opcode spaces">
   {rows.map((row, r) => (
-    <g transform={`translate(${labelW}, ${r * rowH})`}>
+    <g transform={`translate(0, ${r * rowH})`}>
       {segments(row.pattern).map((s) =>
         /[01]/.test(s.ch) ? (
           <g>
@@ -45,7 +45,7 @@ function segments(pattern: string) {
           </g>
         )
       )}
-      <text x={row.pattern.length * cell + 8} y="19" class="len">{row.pattern.length}</text>
+      <text x={row.pattern.length * cell + 8} y="19" class="len">{row.size}</text>
     </g>
   ))}
 </svg>
