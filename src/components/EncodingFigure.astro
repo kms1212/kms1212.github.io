@@ -10,42 +10,47 @@ const rows = [
   { mnemonic: 'VFMADD Pn, Vn, Vn, Vn', pattern: '111111011100zz0ppppvvvvvwwwwwyyyyy', size: '5B' },
 ];
 
-const cell = 13;
-const rowH = 34;
-const maxBits = Math.max(...rows.map((r) => r.pattern.length));
-const width = maxBits * cell;
-const height = rows.length * rowH;
+// Header framing by pattern size: extrashort "0", short "10", extended "11" + 4-bit length L.
+const framed = (pattern: string) =>
+  (pattern.length === 7 ? '0' : pattern.length === 14 ? '10' : '11LLLL') + pattern;
+const prefixLen = (pattern: string) => (pattern.length === 7 ? 1 : pattern.length === 14 ? 2 : 6);
 
-// Group consecutive identical operand letters into one field span.
+// Group runs of the same field letter, but never across a byte boundary.
 function segments(pattern: string) {
-  const out: { start: number; len: number; ch: string }[] = [];
-  for (let i = 0; i < pattern.length; i++) {
-    const ch = pattern[i];
+  const bits = framed(pattern);
+  const pre = prefixLen(pattern);
+  const out: { start: number; len: number; ch: string; kind: string }[] = [];
+  for (let i = 0; i < bits.length; i++) {
+    const ch = bits[i];
+    const kind = i < pre ? (ch === 'L' ? 'lenf' : 'frame') : /[01]/.test(ch) ? 'fixed' : 'field';
     const last = out[out.length - 1];
-    if (last && /[a-z]/.test(ch) && last.ch === ch) last.len++;
-    else out.push({ start: i, len: 1, ch });
+    if (last && (kind === 'field' || kind === 'lenf') && last.kind === kind && last.ch === ch && i % 8 !== 0) last.len++;
+    else out.push({ start: i, len: 1, ch, kind });
   }
   return out;
 }
+
+const cell = 13;
+const rowH = 34;
+const maxBits = Math.max(...rows.map((r) => framed(r.pattern).length));
+const width = maxBits * cell;
+const height = rows.length * rowH;
+
 ---
 
 <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Bedrock instruction encodings with 1- to 5-byte opcode spaces">
   {rows.map((row, r) => (
     <g transform={`translate(0, ${r * rowH})`}>
-      {segments(row.pattern).map((s) =>
-        /[01]/.test(s.ch) ? (
-          <g>
-            <rect x={s.start * cell} y="6" width={cell} height="18" class="fixed" />
-            <text x={s.start * cell + cell / 2} y="19" class="bit">{s.ch}</text>
-          </g>
-        ) : (
-          <g>
-            <rect x={s.start * cell} y="6" width={s.len * cell} height="18" class="field" />
-            <text x={s.start * cell + (s.len * cell) / 2} y="19" class="name">{s.ch}</text>
-          </g>
-        )
-      )}
-      <text x={row.pattern.length * cell + 8} y="19" class="len">{row.size}</text>
+      {segments(row.pattern).map((s) => (
+        <g>
+          <rect x={s.start * cell} y="6" width={s.len * cell} height="18" class={s.kind} />
+          <text x={s.start * cell + (s.len * cell) / 2} y="19" class={`t-${s.kind}`}>{s.ch}</text>
+        </g>
+      ))}
+      {Array.from({ length: framed(row.pattern).length / 8 - 1 }, (_, k) => (
+        <line x1={(k + 1) * 8 * cell} y1="4" x2={(k + 1) * 8 * cell} y2="26" class="byte" />
+      ))}
+      <text x={framed(row.pattern).length * cell + 8} y="19" class="len">{row.size}</text>
     </g>
   ))}
 </svg>
@@ -56,27 +61,38 @@ function segments(pattern: string) {
     height: auto;
     overflow: visible;
   }
+  rect {
+    stroke: rgba(255, 255, 255, 0.25);
+    stroke-width: 0.5;
+  }
+  .frame {
+    fill: rgba(255, 255, 255, 0.95);
+  }
+  .lenf {
+    fill: rgba(255, 255, 255, 0.35);
+  }
   .fixed {
     fill: rgba(255, 255, 255, 0.08);
-    stroke: rgba(255, 255, 255, 0.25);
-    stroke-width: 0.5;
   }
   .field {
-    fill: rgba(255, 255, 255, 0.92);
-    stroke: rgba(255, 255, 255, 0.25);
-    stroke-width: 0.5;
+    fill: rgba(255, 255, 255, 0.75);
   }
-  .bit,
-  .name,
-  .len {
+  .byte {
+    stroke: #fff;
+    stroke-width: 0.6;
+    opacity: 0.8;
+  }
+  text {
     font: 500 9px var(--mono);
     text-anchor: middle;
   }
-  .bit {
-    fill: rgba(255, 255, 255, 0.85);
-  }
-  .name {
+  .t-frame,
+  .t-field {
     fill: var(--isa);
+  }
+  .t-lenf,
+  .t-fixed {
+    fill: rgba(255, 255, 255, 0.9);
   }
   .len {
     fill: rgba(255, 255, 255, 0.6);
