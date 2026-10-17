@@ -14,7 +14,7 @@ export const projects = [
     summary: 'Ambikernel OS · ABI · toolchain',
     status: 'on hold',
     origin: 'from EMOS',
-    href: 'https://github.com/foliOS-project',
+    href: 'https://folios-project.github.io/',
     accent: 'var(--os)',
   },
   {
