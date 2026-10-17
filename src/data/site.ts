@@ -42,12 +42,6 @@ export const work = [
     text: 'GTKWave alternative written in C++ and wxWidgets.',
   },
   {
-    name: 'JSIS',
-    href: 'https://github.com/kms1212/JSIS',
-    kind: 'Web',
-    text: 'Intranet service server for students of Busan Jung-ang High School.',
-  },
-  {
     name: '2022-busanedu-ai-project',
     href: 'https://github.com/kms1212/2022-busanedu-ai-project',
     kind: 'Web',
