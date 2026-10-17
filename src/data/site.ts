@@ -12,7 +12,7 @@ export const projects = [
     slug: 'folios',
     name: 'foliOS',
     summary: 'Ambikernel OS · ABI · toolchain',
-    status: 'active',
+    status: 'on hold',
     origin: 'from EMOS',
     href: 'https://github.com/foliOS-project',
     accent: 'var(--os)',
