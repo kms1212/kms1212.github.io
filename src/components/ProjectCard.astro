@@ -1,0 +1,111 @@
+---
+interface Props {
+  name: string;
+  summary: string;
+  status: string;
+  origin: string | null;
+  href: string;
+  accent: string;
+  big?: boolean;
+}
+
+const { name, summary, status, origin, href, accent, big = false } = Astro.props;
+---
+
+<a class:list={['card', { big }]} href={href} style={`--accent: ${accent}`}>
+  <div class="thumb">
+    <slot />
+  </div>
+  <div class="meta">
+    <div>
+      <strong>{name}</strong>
+      <small>{summary}</small>
+    </div>
+    <span class="chip">
+      <i class:list={[status === 'active' ? 'ok' : 'hold']}></i>
+      {status}{origin && ` · ${origin}`}
+    </span>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+  .big {
+    grid-row: span 2;
+  }
+  .thumb {
+    position: relative;
+    flex: 1;
+    min-height: 170px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .thumb > :global(img),
+  .thumb > :global(video) {
+    position: absolute;
+    inset: 0;
+  }
+  .big .thumb {
+    min-height: 340px;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 16px 18px;
+  }
+  strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  small {
+    color: var(--mute);
+    font-size: 14px;
+  }
+  .chip {
+    font: 500 11px var(--mono);
+    color: var(--mute);
+    white-space: nowrap;
+  }
+  .chip i {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: 1px;
+  }
+  .ok {
+    background: var(--ok);
+  }
+  .hold {
+    background: var(--hold);
+  }
+  @media (max-width: 760px) {
+    .big {
+      grid-row: auto;
+    }
+    .big .thumb {
+      min-height: 220px;
+    }
+  }
+</style>

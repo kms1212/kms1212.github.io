@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Minsu Kwon',
+  description = 'Minsu Kwon (권민수) — systems researcher working from the instruction set up, and full-stack web & app developer.',
+} = Astro.props;
+
+const nav = [
+  { href: '/#projects', label: 'Projects' },
+  { href: '/work/', label: 'Work' },
+  { href: '/about/', label: 'About' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="wrap">
+      <a href="/" class="home">kms1212</a>
+      <nav>
+        {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+        <a href="https://github.com/kms1212">GitHub ↗</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="wrap">
+      <span>© {new Date().getFullYear()} Minsu Kwon</span>
+      <a class="mono" href="https://github.com/kms1212">github.com/kms1212</a>
+    </footer>
+  </body>
+</html>
+
+<style>
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 40px;
+  }
+  .home {
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    font: 500 13px var(--mono);
+    color: var(--mute);
+  }
+  nav a {
+    text-decoration: none;
+  }
+  nav a:hover {
+    color: var(--fg);
+  }
+  footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 96px;
+    padding-top: 20px;
+    padding-bottom: 40px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--mute);
+  }
+</style>

@@ -1,0 +1,104 @@
+---
+import Base from '../layouts/Base.astro';
+import { stack, awards } from '../data/site';
+---
+
+<Base title="About — Minsu Kwon">
+  <section class="wrap page">
+    <h1 class="section-title">About</h1>
+    <p class="lead">
+      I work on computer architecture and systems: ISA design, processor implementation, compilers, ABIs,
+      operating systems, and low-level system software. I am most interested in the interfaces between those
+      layers — what each one should expose, what it should hide, and how a decision at one level ripples through
+      the rest of the stack.
+    </p>
+    <p>
+      My projects grew into each other. <a href="https://github.com/ehbc-project">EHBC</a>, a homebrew computer,
+      needed an operating system. When building boards became the bottleneck, that OS work
+      (<a href="https://github.com/ehbc-project/emos">EMOS</a>) turned into <a href="https://github.com/foliOS-project">foliOS</a>.
+      Building foliOS on x86 then made me want an instruction set designed around the interfaces I cared about,
+      which became <a href="https://github.com/bedrock-proj">Bedrock</a>.
+    </p>
+    <p>Outside research, I build web services and applications professionally.</p>
+
+    <h2 class="section-title" id="experience">Experience</h2>
+    {Object.entries(stack).map(([track, groups]) => (
+      <div class="track">
+        <h3>{track}</h3>
+        {Object.entries(groups).map(([group, items]) => (
+          <div class="row">
+            <span class="label">{group}</span>
+            <span class="items">
+              {items.map((item) => <span class="tag">{item}</span>)}
+            </span>
+          </div>
+        ))}
+      </div>
+    ))}
+
+    <h2 class="section-title" id="awards">Awards &amp; Programs</h2>
+    <ul class="awards">
+      {awards.map((award) => <li lang="ko">{award}</li>)}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .page {
+    margin-top: 88px;
+    max-width: 760px;
+  }
+  .page > p {
+    margin-bottom: 16px;
+  }
+  .lead {
+    font-size: 19px;
+    line-height: 1.55;
+  }
+  h2.section-title {
+    margin-top: 64px;
+  }
+  .track {
+    margin-bottom: 28px;
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+  }
+  .label {
+    font-size: 14px;
+    color: var(--mute);
+  }
+  .items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tag {
+    font: 400 12px var(--mono);
+    padding: 2px 8px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+  }
+  .awards {
+    padding-left: 18px;
+  }
+  .awards li {
+    margin-bottom: 6px;
+  }
+  @media (max-width: 640px) {
+    .row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+</style>

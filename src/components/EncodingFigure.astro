@@ -1,0 +1,85 @@
+---
+// Real encodings taken from bedrock-proj/spec (isa/**/encodings.yaml).
+// Digits are fixed opcode bits; letters are operand fields.
+const rows = [
+  { mnemonic: 'SYSCALL', pattern: '0000101' },
+  { mnemonic: 'ADD.Q imm8, SP', pattern: '100011iiiiiiii' },
+  { mnemonic: 'LEA <ea>, Rn', pattern: '00111zzddddeeeeeee' },
+  { mnemonic: 'CMPJcc Rn, Rn', pattern: '111101000000zzccccssssdddd' },
+  { mnemonic: 'VFMADD Pn, Vn, Vn, Vn', pattern: '111111011100zz0ppppvvvvvwwwwwyyyyy' },
+];
+
+const cell = 13;
+const rowH = 34;
+const labelW = 0;
+const maxBits = Math.max(...rows.map((r) => r.pattern.length));
+const width = labelW + maxBits * cell;
+const height = rows.length * rowH;
+
+// Group consecutive identical operand letters into one field span.
+function segments(pattern: string) {
+  const out: { start: number; len: number; ch: string }[] = [];
+  for (let i = 0; i < pattern.length; i++) {
+    const ch = pattern[i];
+    const last = out[out.length - 1];
+    if (last && /[a-z]/.test(ch) && last.ch === ch) last.len++;
+    else out.push({ start: i, len: 1, ch });
+  }
+  return out;
+}
+---
+
+<svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Variable-length Bedrock instruction encodings, 7 to 34 bits">
+  {rows.map((row, r) => (
+    <g transform={`translate(${labelW}, ${r * rowH})`}>
+      {segments(row.pattern).map((s) =>
+        /[01]/.test(s.ch) ? (
+          <g>
+            <rect x={s.start * cell} y="6" width={cell} height="18" class="fixed" />
+            <text x={s.start * cell + cell / 2} y="19" class="bit">{s.ch}</text>
+          </g>
+        ) : (
+          <g>
+            <rect x={s.start * cell} y="6" width={s.len * cell} height="18" class="field" />
+            <text x={s.start * cell + (s.len * cell) / 2} y="19" class="name">{s.ch}</text>
+          </g>
+        )
+      )}
+      <text x={row.pattern.length * cell + 8} y="19" class="len">{row.pattern.length}</text>
+    </g>
+  ))}
+</svg>
+
+<style>
+  svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .fixed {
+    fill: rgba(255, 255, 255, 0.08);
+    stroke: rgba(255, 255, 255, 0.25);
+    stroke-width: 0.5;
+  }
+  .field {
+    fill: rgba(255, 255, 255, 0.92);
+    stroke: rgba(255, 255, 255, 0.25);
+    stroke-width: 0.5;
+  }
+  .bit,
+  .name,
+  .len {
+    font: 500 9px var(--mono);
+    text-anchor: middle;
+  }
+  .bit {
+    fill: rgba(255, 255, 255, 0.85);
+  }
+  .name {
+    fill: var(--isa);
+  }
+  .len {
+    fill: rgba(255, 255, 255, 0.6);
+    text-anchor: start;
+  }
+</style>
