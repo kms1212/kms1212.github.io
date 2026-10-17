@@ -5,7 +5,7 @@ export const projects = [
     summary: '64-bit ISA · LLVM toolchain · emulator',
     status: 'active',
     origin: 'from foliOS',
-    href: 'https://github.com/bedrock-proj',
+    href: 'https://bedrock-proj.github.io/',
     accent: 'var(--isa)',
   },
   {
