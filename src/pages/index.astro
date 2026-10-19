@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import EncodingFigure from '../components/EncodingFigure.astro';
-import { projects } from '../data/site';
+import { projects, work } from '../data/site';
 
 const [bedrock, folios, ehbc] = projects;
 ---
@@ -32,10 +32,17 @@ const [bedrock, folios, ehbc] = projects;
     </ProjectCard>
   </section>
 
-  <section class="wrap more">
-    <a href="/work/">Selected work →</a>
-    <a href="/about/#experience">Experience →</a>
-    <a href="/about/#awards">Awards →</a>
+  <section class="wrap other" id="other">
+    <h2 class="section-title">Other work</h2>
+    <ul>
+      {work.map((item) => (
+        <li>
+          <a href={item.href}>{item.name}</a>
+          <span>{item.text}</span>
+        </li>
+      ))}
+    </ul>
+    <p class="more"><a href="/about/#experience">Experience</a> · <a href="/about/#awards">Awards</a></p>
   </section>
 </Base>
 
@@ -79,24 +86,43 @@ const [bedrock, folios, ehbc] = projects;
     object-position: left top;
     display: block;
   }
-  .more {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 28px;
-    margin-top: 40px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--mute);
+  .other {
+    margin-top: 72px;
   }
-  .more a {
+  .other ul {
+    list-style: none;
+    padding: 0;
+  }
+  .other li {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 16px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+  }
+  .other li a {
+    font-weight: 600;
     text-decoration: none;
   }
-  .more a:hover {
-    color: var(--fg);
+  .other li a:hover {
+    text-decoration: underline;
+  }
+  .other li span {
+    color: var(--mute);
+  }
+  .more {
+    margin-top: 24px;
+    font-size: 14px;
+    color: var(--mute);
   }
   @media (max-width: 760px) {
     .grid {
       grid-template-columns: minmax(0, 1fr);
+    }
+    .other li {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2px;
     }
   }
 </style>

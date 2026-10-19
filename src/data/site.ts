@@ -32,25 +32,21 @@ export const work = [
   {
     name: 'ofsl2',
     href: 'https://github.com/kms1212/ofsl2',
-    kind: 'Systems',
     text: 'C library for manipulating file-system structures on drives and disk images, with a C++ wrapper.',
   },
   {
     name: 'WxWave',
     href: 'https://github.com/kms1212/WxWave',
-    kind: 'Systems',
     text: 'GTKWave alternative written in C++ and wxWidgets.',
   },
   {
     name: '2022-busanedu-ai-project',
     href: 'https://github.com/kms1212/2022-busanedu-ai-project',
-    kind: 'Web',
     text: 'AI-based project, 1st place at the 2022 Busan AI project competition.',
   },
   {
     name: 'pyApplicationFramework',
     href: 'https://github.com/kms1212/pyApplicationFramework',
-    kind: 'App',
     text: 'SwiftUI-style declarative GUI framework for Python.',
   },
 ];
